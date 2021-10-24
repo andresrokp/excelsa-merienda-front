@@ -5,13 +5,11 @@ github: @andresrokp
 basado en: material-ui dashboard
 */
 
-import React, { Fragment, useState } from 'react'
+import React, { Fragment } from 'react'
 import { BotonModal } from '../MenuProductos/BotonModal';
 
 export const ListaProductos = ( props ) => {
     
-    // const [stLista, setStLista] = useState([...inputList]);
-
     return (
         <Fragment>
             <div className="col-lg-12">

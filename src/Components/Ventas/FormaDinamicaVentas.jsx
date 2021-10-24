@@ -130,7 +130,7 @@ export function FormaDinamicaVentas( props ) {
     },[stRegistro.listaCompra])
 
     useEffect(()=>{
-        setStEnvio({show:false, isGood:stEnvio.isGood});
+        setStEnvio((prior)=>({...prior, show:false}));
     },[stRegistro.descripcion, stRegistro.valor, stRegistro.estado])
 
 

@@ -27,7 +27,7 @@ export function Registrarproducto( props ) {
     let myDbid = '';
     
     if (isCreate) {
-        myElement = {id: nanoidCA(), descripcion:'', valor:0, estado:null};
+        myElement = {id: nanoidCA(), descripcion:'', valor:'', estado:null};
         hdlAddListDBx = () => {props.propsMM.propsBM.propsMP.hdlAddListDB();};
     }else{
         myElement = { id: props.propsMM.propsBM.curElem.id,
@@ -75,7 +75,7 @@ export function Registrarproducto( props ) {
     }
 
     useEffect(()=>{
-        setStEnvio({show:false, isGood:stEnvio.isGood});
+        setStEnvio((prior)=>({...prior, show:false}))
     },[stRegistro.descripcion, stRegistro.valor, stRegistro.estado])
 
     return (
@@ -101,7 +101,7 @@ export function Registrarproducto( props ) {
                 </div>
                 <FormControl component="fieldset">
                     <RadioGroup row aria-label="gender" name="row-radio-buttons-group">
-                        <FormControlLabel onClick={()=>(hdlEstado(true))} value="yes" control={<Radio checked={stRegistro.estado} />} label="Disponible" />
+                        <FormControlLabel onClick={()=>(hdlEstado(true))} value="yes" control={<Radio checked={!!stRegistro.estado} />} label="Disponible" />
                         <span>&nbsp;</span>
                         <FormControlLabel onClick={()=>(hdlEstado(false))} value="no" control={<Radio checked={stRegistro.estado === null? false:!stRegistro.estado}/>} label="No disponible" />
                     </RadioGroup>

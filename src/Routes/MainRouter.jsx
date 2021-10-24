@@ -2,7 +2,8 @@ import React from 'react'
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
 import { PublicRoute } from './PublicRoute';
-import { SignIn } from '../Components/Signning/SignIn';
+import { PrivateRoute } from './PrivateRoute';
+import { LogIn } from '../Components/Authentication/LogIn';
 import { DashboardWHTP } from '../Components/MarcoGeneral/DashboardWHTP';
 import { NotFound } from '../Components/MarcoGeneral/NotFound';
 
@@ -10,10 +11,11 @@ export const MainRouter = () => {
     return (
         <Router>
             <Switch>
-                <Route path="/signin" component={SignIn}/>
-                <PublicRoute exact path={'/'} component={DashboardWHTP}/>
+                <Route path="/login" component={LogIn}/>
+                <PrivateRoute exact path={'/'} component={DashboardWHTP}/>
+                <PublicRoute path={'/productos'} component={DashboardWHTP}/>
                 <PublicRoute path={'/*'} component={NotFound}/>
-                
+                <Redirect to="/"/>
             </Switch>
         </Router>
     )

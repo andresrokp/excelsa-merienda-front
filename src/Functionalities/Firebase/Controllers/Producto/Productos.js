@@ -33,7 +33,7 @@ export const consultarDatabase = async (nombreDatabase) => {
       };
       return document;
     });
-    console.log(elementos);
+    console.log('De la DDBB  ',`${nombreDatabase}`,'  ~~',elementos);
     return elementos;
   } catch (error) {
     throw new Error(error.message);
@@ -142,7 +142,7 @@ onAuthStateChanged(auth, (user) => {
     usuario = user
     console.log('El usuario logueado');
   } else {
-    console.log('El usuario ya no esta logueado');
+    console.log('No hay usuario logeado');
     usuario = undefined
   }
 
