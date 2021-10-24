@@ -96,7 +96,7 @@ const mdTheme = createTheme({
 });
 
 export const DashboardWHTP = () => {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(window.innerWidth < 570 ? false : true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -130,7 +130,7 @@ export const DashboardWHTP = () => {
             </IconButton>
             <Typography
               component="h1"
-              variant="h6"
+              variant="h4"
               color="inherit"
               noWrap
               sx={{ flexGrow: 1 }}
@@ -194,3 +194,5 @@ export const DashboardWHTP = () => {
     </ThemeProvider>
   );
 }
+
+//https://github.com/mui-org/material-ui/tree/next/docs/src/pages/getting-started/templates/dashboard

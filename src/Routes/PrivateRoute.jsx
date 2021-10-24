@@ -2,12 +2,13 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
-import React from 'react'
+export const PrivateRoute = ({ ...rest }) => {
 
-export const PrivateRoute = () => {
+    const role = 'seller';
+
     return (
-        <div>
-            
-        </div>
-    )
+        <>
+            {(role === "admin") ? <Route {...rest} /> : <Redirect to='/login' />};
+        </>
+    );
 }

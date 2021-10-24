@@ -12,6 +12,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 
 //Mis Importaciones
 import LogoutIcon from '@mui/icons-material/Logout';
+import { Link } from 'react-router-dom';
 
 
 
@@ -67,10 +68,6 @@ export function MainListItems({ clickAction }){
 
 export function SecondaryListItems() {
   
-  const hdlClickCerrar = ()=>{
-    window.open("https://lms.misiontic2022udea.com/","_self");
-  }
-
   return(
     <div>
       <ListSubheader inset>Controles</ListSubheader>
@@ -86,7 +83,7 @@ export function SecondaryListItems() {
         </ListItemIcon>
         <ListItemText primary="Conquistar el mundo" />
       </ListItem>
-      <ListItem button onClick={hdlClickCerrar}>
+      <ListItem button component={Link} to='/login'>
         <ListItemIcon>
           <LogoutIcon />
         </ListItemIcon>

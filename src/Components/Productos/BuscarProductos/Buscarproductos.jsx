@@ -4,7 +4,7 @@ github: @andresrokp
 basado en: material-ui dashboard
 */
 
-import {React , Fragment, useState} from 'react'
+import {React , Fragment} from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 export function Buscarproducto( props ) {

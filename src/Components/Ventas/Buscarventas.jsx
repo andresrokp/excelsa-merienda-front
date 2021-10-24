@@ -4,16 +4,11 @@ github: @andresrokp
 basado en: material-ui dashboard
 */
 
-import {React , Fragment, useState} from 'react'
+import {React , Fragment} from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 export function Buscarventas( props ) {
 
-    // const [inKey, setInKey] = useState('');
-    // const hdlClean = ()=>{setInKey('')}
-    // value={inKey}
-    // onClick={hdlClean}
-    
     return (
         <Fragment>
             <div className="row">
