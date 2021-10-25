@@ -1,6 +1,6 @@
 import { getFirestore } from 'firebase/firestore';
 import { addDoc, collection, getDocs, query, updateDoc, doc, where, deleteDoc/*getDoc, deleteDoc*/ } from 'firebase/firestore'
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from '../../config-firebase';
 
@@ -8,6 +8,7 @@ initializeApp(firebaseConfig);
 
 const database = getFirestore();
 const auth = getAuth();
+const authProvider = new GoogleAuthProvider();
 
 export let usuario;
 
@@ -111,6 +112,18 @@ export const loginUsuario = async (email, password) => {
   }
 }
 
+export const loginGoogle = async () => {
+  try {
+    const userCredentials = await signInWithPopup(authProvider);
+    const user = {
+      id: userCredentials.user.uid,
+      email: userCredentials.user.email
+    }
+    return user
+  } catch (e) {
+    throw new Error(e);
+  }
+}
 
 // LogOut -> salir
 export const logOutUsuario = () => {

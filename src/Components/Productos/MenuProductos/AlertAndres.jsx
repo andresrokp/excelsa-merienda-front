@@ -14,7 +14,7 @@ export default function AlertAndres( {from, showMe, isGood, props}) {
                      :" x x Envío fallido. Revise sus entradas o su conexión";
 
   return (
-      <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%' }}>
       <Collapse in={showMe}>
         {isGood ? <Alert severity="success">{msg}</Alert>
                 : <Alert severity="warning">{msg}</Alert>

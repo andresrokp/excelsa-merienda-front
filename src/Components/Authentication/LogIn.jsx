@@ -12,6 +12,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { Link as RouterLink } from 'react-router-dom';
+import { loginGoogle } from '../../Functionalities/Firebase/Controllers/Producto/Productos'
 
 function Copyright(props) {
   return (
@@ -24,6 +25,13 @@ function Copyright(props) {
 const theme = createTheme();
 
 export const LogIn = () => {
+
+  let user = null;
+
+  const hdlGoogleAuth = () => {
+    user = loginGoogle();
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -41,13 +49,14 @@ export const LogIn = () => {
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
+          
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus/>
             <TextField margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password"/>
             <Button component={RouterLink} to='/productos' type="button" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
               {/* >> OJO el type debe ser submit y los TextField 'required'*/}
-              Entrar sin agüero {'>>'}
+              Ingresar
               </Button>
             <Grid container>
               <Grid item xs>
@@ -56,12 +65,20 @@ export const LogIn = () => {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
+                <Link component={RouterLink} to="/signup" variant="body2">
+                  {"Registra una cuenta"}
                 </Link>
               </Grid>
             </Grid>
           </Box>
+          <Typography component="h6" variant="h8">
+            <hr />
+            O ingresa con tu cuenta de Google:
+          </Typography>
+            <button onClick={()=>hdlGoogleAuth()} className="btn btn-danger btn-block mt-2" type="button">
+            Ingresar con Google
+          </button>
+          
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
