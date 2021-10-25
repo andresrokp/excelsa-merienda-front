@@ -4,13 +4,15 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, si
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from '../../config-firebase';
 
+
+
 initializeApp(firebaseConfig);
 
 const database = getFirestore();
 const auth = getAuth();
 const authProvider = new GoogleAuthProvider();
 
-export let usuario;
+export let globalUser;
 
 export const guardarDatabase = async (nombreColeccion, data) => {
 
@@ -18,7 +20,7 @@ export const guardarDatabase = async (nombreColeccion, data) => {
     const respuesta = await addDoc(collection(database, nombreColeccion), data)
     return respuesta;
   } catch (e) {
-    return false;
+    return undefined;
   }
 
 }
@@ -54,7 +56,7 @@ export const actualizarDocumentoDatabase = async (nombreDatabase, id, data) => {
 export const consultarDatabaseWhere = async (nombreDatabase, field, value) => {
   try {
     const response = await getDocs(query(collection(database, nombreDatabase), where(`${field}`, '==', `${value}`)));
-    console.log('response de query  ~~',response);
+    console.log('response de query con Where ', field,'  ~~',response);
     const elementos = response.docs.map((doc) => {
       const document = {
         dbid: doc.id,
@@ -80,20 +82,23 @@ export const eliminarDocumentoDatabase = async (nombreColeccion, id) => {
 }
 
 // CrearUsuarios
-export const crearUsuario = async (email, password) => {
+export const crearUsuario = async (email, password, nameIn) => {
   try {
     const credencialesUsuario = await createUserWithEmailAndPassword(auth, email, password)
+    console.log('datos en endpoint createuser');
     console.log(credencialesUsuario);
     console.log(credencialesUsuario.user);
     console.log(credencialesUsuario.user.uid);
     const user = {
-      id: credencialesUsuario.user.uid,
-      email: credencialesUsuario.user.email
+      uid: credencialesUsuario.user.uid,
+      email: credencialesUsuario.user.email,
+      name: nameIn,
+      role: 'espera'
     }
-    guardarDatabase('listaUsuarios', user)
+    await guardarDatabase('userList', user)
     return user
   } catch (e) {
-    throw new Error(e)
+    return undefined;
   }
 }
 
@@ -101,45 +106,49 @@ export const crearUsuario = async (email, password) => {
 export const loginUsuario = async (email, password) => {
   try {
     const credencialesUsuario = await signInWithEmailAndPassword(auth, email, password)
-    const user = {
-      id: credencialesUsuario.user.uid,
+    let user = {
+      uid: credencialesUsuario.user.uid,
       email: credencialesUsuario.user.email
     }
-    return user
+    user =  await consultarDatabaseWhere('userList', 'uid', user.uid);
+    return user[0];
   } catch (e) {
-    // throw new Error(e)
-    throw new Error(e.code)
+    return undefined;
   }
 }
 
-export const loginGoogle = async () => {
+export const googleLog = async () => {
   try {
     const userCredentials = await signInWithPopup(authProvider);
     const user = {
-      id: userCredentials.user.uid,
+      uid: userCredentials.user.uid,
       email: userCredentials.user.email
     }
-    return user
+    return user;
   } catch (e) {
-    throw new Error(e);
+    return undefined;
   }
 }
 
 // LogOut -> salir
 export const logOutUsuario = () => {
   const respuesta = signOut(auth)
+  localStorage.removeItem('elsujetoencuestion');
   console.log(respuesta);
   console.log('Me sali...!');
 }
 
 //  datos usuario
-export const datosUsuario = () => {
+export const datosUsuario = async () => {
   const user = auth.currentUser
-  console.log(user);
+  console.log('justo al auth.currentUser', auth, user);
 
   if (user) {
-    console.log(user);
-    return user
+    console.log('en datos user ~',user);
+    let complete =  await consultarDatabaseWhere('userList', 'uid', user.uid);
+    complete = complete[0];
+    console.log('datos completos desde datosUsuario ~',complete);
+    return complete;
   } else {
     console.log('datos usuario:', user);
     return undefined
@@ -149,14 +158,15 @@ export const datosUsuario = () => {
 
 // el.addEventListener('click', function)
 // Usuario Activo
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
 
   if (user) {
-    usuario = user
-    console.log('El usuario logueado');
+    const userData = await consultarDatabaseWhere('userList', 'uid', user.uid);
+    globalUser = userData[0];
+    console.log('state - El usuario está logueado', globalUser);
   } else {
     console.log('No hay usuario logeado');
-    usuario = undefined
+    globalUser = "onAuth globalUser, no user"
   }
 
 })

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,8 +11,11 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-import { Link as RouterLink } from 'react-router-dom';
-import { loginGoogle } from '../../Functionalities/Firebase/Controllers/Producto/Productos'
+import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { globalUser, guardarDatabase, loginUsuario, logOutUsuario } from '../../Functionalities/Firebase/Controllers/Producto/Productos'
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import { UserContext } from '../Context/UserContext';
 
 function Copyright(props) {
   return (
@@ -26,18 +29,40 @@ const theme = createTheme();
 
 export const LogIn = () => {
 
-  let user = null;
+  const { setUser } = useContext(UserContext)
 
-  const hdlGoogleAuth = () => {
-    user = loginGoogle();
-  }
+  const [stAlert, setStAlert] = useState({showMe: false});
 
-  const handleSubmit = (event) => {
+  const history = useHistory();
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
     console.log({ email: data.get('email') , password: data.get('password')});
+    
+    if(data.get('email').trim() === '' || data.get('password').trim() === '') {
+      setStAlert({showMe: true});
+      return;
+    }
+
+    const user = await loginUsuario(data.get('email'), data.get('password'));
+
+    if(user){
+      console.log('login bueno, devolvió user ~~', user);
+      setUser(user);
+      localStorage.setItem('elsujetoencuestion', JSON.stringify(user));
+      history.push(`/${user.uid}/home`);
+    }else{
+      console.log('login malo');
+      setStAlert({showMe: true});
+    }
+
   };
+  
+  
+  useEffect(() => {
+    logOutUsuario();
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
@@ -48,36 +73,38 @@ export const LogIn = () => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
-          
+            Log in
           </Typography>
+          {/* Posible componente Alert - Sacar*/}
+          <Box sx={{ width: '100%' }}>
+              <Collapse in={stAlert.showMe}>
+                  <Alert severity="warning"> x x x Algo está mal, revisa. x x x</Alert>
+              </Collapse>
+          </Box>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus/>
-            <TextField margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password"/>
-            <Button component={RouterLink} to='/productos' type="button" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              {/* >> OJO el type debe ser submit y los TextField 'required'*/}
+            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth id="email" name="email"/>
+            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password" type="password" id="password"/>
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
               Ingresar
               </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
+                
               </Grid>
               <Grid item>
                 <Link component={RouterLink} to="/signup" variant="body2">
-                  {"Registra una cuenta"}
+                  {"¿No tienes cuenta?, Regístrate."}
                 </Link>
               </Grid>
             </Grid>
           </Box>
-          <Typography component="h6" variant="h8">
+          {/* <Typography component="h6" variant="h8">
             <hr />
             O ingresa con tu cuenta de Google:
           </Typography>
-            <button onClick={()=>hdlGoogleAuth()} className="btn btn-danger btn-block mt-2" type="button">
+            <button className="btn btn-danger btn-block mt-2" type="button">
             Ingresar con Google
-          </button>
+          </button> */}
           
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />

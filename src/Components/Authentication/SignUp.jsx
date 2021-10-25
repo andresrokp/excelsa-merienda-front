@@ -13,7 +13,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
-import { useHistory } from 'react-router-dom';
+import { crearUsuario } from '../../Functionalities/Firebase/Controllers/Producto/Productos';
+import { useHistory, Link as RouterLink } from "react-router-dom";
 
 function validateEmail(email) {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -35,22 +36,30 @@ export const SignUp = () => {
   const [stAlert, setStAlert] = useState({showMe: false});
   const history = useHistory();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({ email: data.get('email') , password: data.get('password')});
+    console.log({ email: data.get('email') , password: data.get('password') , username: data.get('username') });
     
-    if(data.get('email').trim() === '' || data.get('password').trim() === '' || validateEmail(data.get('email')) === false) {
-      setStAlert({showMe: true, isGood: false, msg: 'Please fill all the fields'});
+    if(data.get('email').trim() === '' || data.get('password').trim() === '' || validateEmail(data.get('email')) === false || data.get('username').trim() === ''){
+      setStAlert({showMe: true});
       return;
     }
     
     if(data.get('password') !== data.get('password2')){
-      setStAlert({showMe: true, isGood: false, msg: 'Passwords do not match'});
+      setStAlert({showMe: true});
       return;
     }
 
-    history.push('/productos');
+    const newUser = await crearUsuario(data.get('email'), data.get('password'), data.get('username'));
+    if(newUser){
+      console.log('Usuario creado');
+      history.push('/login');
+    }else{
+      setStAlert({showMe: true});
+      return;
+    }
+    
   };
   
   return (
@@ -71,6 +80,7 @@ export const SignUp = () => {
               </Collapse>
           </Box>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="username" label="Nombre personal" type="text" id="username" autoComplete="username"/>
             <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth id="email" label="Email Address to register" name="email" autoComplete="email"/>
             <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password" label="Enter a password" type="password" id="password" autoComplete="current-password"/>
             <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password2" label="Re-enter Password" type="password" id="password2" autoComplete="current-password"/>
@@ -79,14 +89,12 @@ export const SignUp = () => {
               </Button>
             <Grid container>
               <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
+                <Link component={RouterLink} to="/login" variant="body2">
+                  {'< volver a login'}
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
+                
               </Grid>
             </Grid>
           </Box>
