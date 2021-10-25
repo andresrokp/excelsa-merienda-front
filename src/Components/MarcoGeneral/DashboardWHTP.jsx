@@ -25,6 +25,10 @@ import { green, orange } from '@mui/material/colors';
 import { MainContentProductos } from '../Productos/MainContentProductos';
 import { MainContentVentas } from '../Ventas/MainContentVentas';
 import { globalUser } from '../../Functionalities/Firebase/Controllers/Producto/Productos';
+import { MainContentRoles } from '../Roles/MainContentRoles'
+import { UserContext } from '../Context/UserContext';
+import { Paper } from '@mui/material';
+
 
 function Copyright(props) {
   return (
@@ -102,13 +106,14 @@ export const DashboardWHTP = () => {
     setOpen(!open);
   };
 
-  const [boardCounter, setBoardCounter] = React.useState(3);
-  const toggleContenido = (n) => {
-    setBoardCounter(n);
+  const [boardCounter, setBoardCounter] = React.useState(localStorage.getItem('boardCounter'));
+  const toggleContenido = (b) => {
+    setBoardCounter(b);
   };
 
   React.useEffect(() =>{
     console.log('globalU desde loading en DSHB ~~',globalUser);
+    setBoardCounter(localStorage.getItem('boardCounter'))
   },[]);
 
   return (
@@ -185,10 +190,10 @@ export const DashboardWHTP = () => {
           {/* INICIA cuerpo módulos nuestros*/}
           <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
-              {boardCounter === 3 ? <MainContentProductos/> : null}
+              {boardCounter === 1 ? <CuadritoHome/> : null}
               {boardCounter === 2 ? <MainContentVentas/> : null}
-              {/* {boardCounter === 3 ? </> : null}
-              {boardCounter === 3 ? </> : null} */}
+              {boardCounter === 3 ? <MainContentProductos/> : null}
+              {boardCounter === 4 ? <MainContentRoles/> : null}
             </Grid>
           </Container>
 
@@ -201,3 +206,39 @@ export const DashboardWHTP = () => {
 }
 
 //https://github.com/mui-org/material-ui/tree/next/docs/src/pages/getting-started/templates/dashboard
+
+const CuadritoHome = () => {
+
+  const { user } = React.useContext(UserContext)
+
+  return (
+    <Grid item xs={12}>
+        <Paper
+          sx={{
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          
+
+          <Typography component="h2" variant="h6" color="primary" gutterBottom>
+            Hola
+          </Typography>
+          <Typography component="p" variant="h4">
+            {user.name} &#128512;
+          </Typography>
+          <Typography color="text.secondary" sx={{ flex: 1 }}>
+            Tienes Rol de: {user.role}
+          </Typography>
+          
+          <Link color="primary" href="#">
+            MisiónTIC 2022
+          </Link>
+
+
+        </Paper>
+      </Grid>
+
+  );
+}
