@@ -10,9 +10,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-
+ 
 import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { globalUser, guardarDatabase, loginUsuario, logOutUsuario } from '../../Functionalities/Firebase/Controllers/Producto/Productos'
+
+import { loginUsuario, logOutUsuario } from '../../Functionalities/Firebase/Controllers/Producto/Productos'
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import { UserContext } from '../Context/UserContext';

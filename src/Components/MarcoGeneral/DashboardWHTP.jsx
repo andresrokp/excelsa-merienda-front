@@ -24,7 +24,7 @@ import Grid from '@mui/material/Grid';
 import { green, orange } from '@mui/material/colors';
 import { MainContentProductos } from '../Productos/MainContentProductos';
 import { MainContentVentas } from '../Ventas/MainContentVentas';
-import { datosUsuario, globalUser } from '../../Functionalities/Firebase/Controllers/Producto/Productos';
+import { globalUser } from '../../Functionalities/Firebase/Controllers/Producto/Productos';
 
 function Copyright(props) {
   return (
