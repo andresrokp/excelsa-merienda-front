@@ -6,13 +6,13 @@ basado en: material-ui dashboard
 
 import {React , Fragment} from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
+import { globalUser } from '../../../Functionalities/Firebase/Controllers/Producto/Productos'
 
 export function Buscarproducto( props ) {
 
-    // const [inKey, setInKey] = useState('');
-    // const hdlClean = ()=>{setInKey('')}
-    // value={inKey}
-    // onClick={hdlClean}
+    const hdlPrintGlobal = ()=>{
+        console.log( 'globalU desde click en limpiar ~~', globalUser );
+    }
     
     return (
         <Fragment>
@@ -22,7 +22,7 @@ export function Buscarproducto( props ) {
                             aria-label="Search" aria-describedby="basic-addon2"/>
                 </div>
                 <div className="input-group-append">
-                    <button className="btn btn-primary float-end m-2" type="button">
+                    <button onClick={()=>(hdlPrintGlobal())} className="btn btn-primary float-end m-2" type="button">
                         Limpiar
                     </button>
                 </div>

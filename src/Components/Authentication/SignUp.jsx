@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,11 +11,15 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-import { Link as RouterLink, useHistory } from 'react-router-dom';
-import { globalUser, guardarDatabase, loginUsuario, logOutUsuario } from '../../Functionalities/Firebase/Controllers/Producto/Productos'
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
-import { UserContext } from '../Context/UserContext';
+import { crearUsuario } from '../../Functionalities/Firebase/Controllers/Producto/Productos';
+import { useHistory, Link as RouterLink } from "react-router-dom";
+
+function validateEmail(email) {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
+}
 
 function Copyright(props) {
   return (
@@ -27,43 +31,37 @@ function Copyright(props) {
 
 const theme = createTheme();
 
-export const LogIn = () => {
-
-  const { setUser } = useContext(UserContext)
+export const SignUp = () => {
 
   const [stAlert, setStAlert] = useState({showMe: false});
-
   const history = useHistory();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({ email: data.get('email') , password: data.get('password')});
+    console.log({ email: data.get('email') , password: data.get('password') , username: data.get('username') });
     
-    if(data.get('email').trim() === '' || data.get('password').trim() === '') {
+    if(data.get('email').trim() === '' || data.get('password').trim() === '' || validateEmail(data.get('email')) === false || data.get('username').trim() === ''){
+      setStAlert({showMe: true});
+      return;
+    }
+    
+    if(data.get('password') !== data.get('password2')){
       setStAlert({showMe: true});
       return;
     }
 
-    const user = await loginUsuario(data.get('email'), data.get('password'));
-
-    if(user){
-      console.log('login bueno, devolvió user ~~', user);
-      setUser(user);
-      localStorage.setItem('elsujetoencuestion', JSON.stringify(user));
-      history.push(`/${user.uid}/home`);
+    const newUser = await crearUsuario(data.get('email'), data.get('password'), data.get('username'));
+    if(newUser){
+      console.log('Usuario creado');
+      history.push('/login');
     }else{
-      console.log('login malo');
       setStAlert({showMe: true});
+      return;
     }
-
+    
   };
   
-  
-  useEffect(() => {
-    logOutUsuario();
-  }, []);
-
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -73,7 +71,7 @@ export const LogIn = () => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Log in
+            Sign up
           </Typography>
           {/* Posible componente Alert - Sacar*/}
           <Box sx={{ width: '100%' }}>
@@ -82,30 +80,24 @@ export const LogIn = () => {
               </Collapse>
           </Box>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth id="email" name="email"/>
-            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password" type="password" id="password"/>
+            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="username" label="Nombre personal" type="text" id="username" autoComplete="username"/>
+            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth id="email" label="Email Address to register" name="email" autoComplete="email"/>
+            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password" label="Enter a password" type="password" id="password" autoComplete="current-password"/>
+            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password2" label="Re-enter Password" type="password" id="password2" autoComplete="current-password"/>
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Ingresar
+              Registrarme {'>>'}
               </Button>
             <Grid container>
               <Grid item xs>
-                
+                <Link component={RouterLink} to="/login" variant="body2">
+                  {'< volver a login'}
+                </Link>
               </Grid>
               <Grid item>
-                <Link component={RouterLink} to="/signup" variant="body2">
-                  {"¿No tienes cuenta?, Regístrate."}
-                </Link>
+                
               </Grid>
             </Grid>
           </Box>
-          {/* <Typography component="h6" variant="h8">
-            <hr />
-            O ingresa con tu cuenta de Google:
-          </Typography>
-            <button className="btn btn-danger btn-block mt-2" type="button">
-            Ingresar con Google
-          </button> */}
-          
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>

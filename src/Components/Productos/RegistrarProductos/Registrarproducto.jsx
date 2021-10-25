@@ -97,7 +97,6 @@ export function Registrarproducto( props ) {
                     <label className="form-label" htmlFor="modalInputProductPrice">
                         Valor Unitario </label>
                     <input value={stRegistro.valor} onChange={hdlVal} className="form-control" id="modalInputProductPrice" type="text"/>
-                    {/* <BotonModal btnNumber={4} btnName={"Estado del Registro"}/> */}
                 </div>
                 <FormControl component="fieldset">
                     <RadioGroup row aria-label="gender" name="row-radio-buttons-group">
@@ -111,8 +110,6 @@ export function Registrarproducto( props ) {
                         Registrar </button>
                 </div>
             </form>
-            {/* <ModalModal modalName={'Estado del Registro'} modalNumber={4} openMe={openM} closeFunc={hdlCloseM} /> */}
-            
         </Fragment>
     )
 }
