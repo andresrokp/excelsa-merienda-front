@@ -15,7 +15,7 @@ export const MainRouter = () => {
                 <Route path="/login" component={LogIn}/>
                 <Route path="/signup" component={SignUp}/>
                 <PrivateRoute exact path={'/'} component={DashboardWHTP}/>
-                <PublicRoute path={'/:id/home'} component={DashboardWHTP}/>
+                <PublicRoute path={'/:id/*'} component={DashboardWHTP}/>
                 <PublicRoute path={'/*'} component={NotFound}/>
                 <Redirect to="/"/>
             </Switch>

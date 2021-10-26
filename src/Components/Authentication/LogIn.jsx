@@ -52,6 +52,7 @@ export const LogIn = () => {
       console.log('login bueno, devolvió user ~~', user);
       setUser(user);
       localStorage.setItem('elsujetoencuestion', JSON.stringify(user));
+      localStorage.setItem('boardCounter', '1');
       history.push(`/${user.uid}/home`);
     }else{
       console.log('login malo');
