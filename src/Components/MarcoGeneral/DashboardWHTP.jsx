@@ -106,14 +106,14 @@ export const DashboardWHTP = () => {
     setOpen(!open);
   };
 
-  const [boardCounter, setBoardCounter] = React.useState(localStorage.getItem('boardCounter'));
+  const [boardCounter, setBoardCounter] = React.useState(1);
   const toggleContenido = (b) => {
     setBoardCounter(b);
   };
 
   React.useEffect(() =>{
     console.log('globalU desde loading en DSHB ~~',globalUser);
-    setBoardCounter(localStorage.getItem('boardCounter'))
+    setBoardCounter(1)
   },[]);
 
   return (
