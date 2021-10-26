@@ -84,8 +84,8 @@ export const LogIn = () => {
               </Collapse>
           </Box>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth id="email" name="email"/>
-            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password" type="password" id="password"/>
+            <TextField onFocus={(e)=>{setStAlert(false)}} label="Escribe tu correo" margin="normal" required fullWidth id="email" name="email"/>
+            <TextField onFocus={(e)=>{setStAlert(false)}} label="Escribe tu contraseña" margin="normal" required fullWidth name="password" type="password" id="password"/>
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
               Ingresar
               </Button>
