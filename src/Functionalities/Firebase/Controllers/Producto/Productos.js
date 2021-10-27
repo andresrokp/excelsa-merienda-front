@@ -1,5 +1,5 @@
 import { getFirestore } from 'firebase/firestore';
-import { addDoc, collection, getDocs, query, updateDoc, doc, where, deleteDoc/*getDoc, deleteDoc*/ } from 'firebase/firestore'
+import { addDoc, collection, getDoc, getDocs, query, updateDoc, doc, where, deleteDoc/*getDoc, deleteDoc*/ } from 'firebase/firestore'
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from '../../config-firebase';
@@ -42,6 +42,23 @@ export const consultarDatabase = async (nombreDatabase) => {
     throw new Error(error.message);
   }
 };
+
+export const consultarDocumentoDatabase = async (nombreColeccion, id) => {
+  try {
+    const respuesta = await getDoc(doc(database, nombreColeccion, id))
+    // console.log(respuesta);
+
+    const documentoTemporal = {
+      dbid: respuesta.id,
+      ...respuesta.data(),
+    }
+
+    console.log(documentoTemporal);
+    return documentoTemporal
+  } catch (e) {
+    throw new Error(e)
+  }
+}
 
 export const actualizarDocumentoDatabase = async (nombreDatabase, id, data) => {
     try {

@@ -24,7 +24,7 @@ import { Spinner } from './Spinner';
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '} Excelsa Merienda por Andrés FRP, {new Date().getFullYear()}{'.'}
+      {'Copyleft ☺ '} Excelsa Merienda por Andrés FRP, {new Date().getFullYear()}{'.'}
     </Typography>
   );
 }

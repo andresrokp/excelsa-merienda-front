@@ -34,8 +34,11 @@ export function MainContentVentas(){
     loadElems();
   },[refreshFlag])
 
-  const filteredList = appListDB.filter((prod)=>(prod.descripcion.toLowerCase().includes(searchKey.toLowerCase())
-                                                || prod.id.toLowerCase().includes(searchKey.toLowerCase())))
+  const filteredList = appListDB.filter((prod)=>(prod.encargado.toLowerCase().includes(searchKey.toLowerCase())
+                                                || prod.id.toLowerCase().includes(searchKey.toLowerCase())
+                                                || prod.docCliente.toLowerCase().includes(searchKey.toLowerCase())
+                                                || prod.nomCliente.toLowerCase().includes(searchKey.toLowerCase())
+                                                ))
   
    
   
