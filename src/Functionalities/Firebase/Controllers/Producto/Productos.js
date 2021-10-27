@@ -102,6 +102,22 @@ export const crearUsuario = async (email, password, nameIn) => {
   }
 }
 
+export const googleCreate = async () => {
+  try {
+    const credencialesUsuario = await signInWithPopup(auth, authProvider);
+    const user = {
+      uid: credencialesUsuario.user.uid,
+      email: credencialesUsuario.user.email,
+      name: credencialesUsuario.user.displayName,
+      role: 'espera'
+    }
+    await guardarDatabase('userList', user)
+    return user
+  } catch (e) {
+    return undefined;
+  }
+}
+
 // Login Usuarios
 export const loginUsuario = async (email, password) => {
   try {
@@ -117,14 +133,19 @@ export const loginUsuario = async (email, password) => {
   }
 }
 
-export const googleLog = async () => {
+export const googleLogin = async () => {
   try {
-    const userCredentials = await signInWithPopup(authProvider);
-    const user = {
+    const userCredentials = await signInWithPopup(auth, authProvider);
+
+    console.log('User luego de Google  ~~',userCredentials);
+    let user = {
       uid: userCredentials.user.uid,
       email: userCredentials.user.email
     }
-    return user;
+    console.log('User luego de Filtrar Google  ~~',user);
+    user =  await consultarDatabaseWhere('userList', 'uid', user.uid);
+    console.log('User luego de Filtrar Google and Where  ~~',user);
+    return user[0];
   } catch (e) {
     return undefined;
   }

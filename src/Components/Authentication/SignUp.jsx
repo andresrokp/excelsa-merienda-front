@@ -13,8 +13,10 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
-import { crearUsuario } from '../../Functionalities/Firebase/Controllers/Producto/Productos';
+import { crearUsuario, googleCreate } from '../../Functionalities/Firebase/Controllers/Producto/Productos';
 import { useHistory, Link as RouterLink } from "react-router-dom";
+
+import GoogleIcon from '@mui/icons-material/Google';
 
 function validateEmail(email) {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -24,30 +26,47 @@ function validateEmail(email) {
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '} Excelsa Merienda {new Date().getFullYear()}{'.'}
+      {'Copyright © '} Excelsa Merienda por @andresrokp {new Date().getFullYear()}{'.'}
     </Typography>
   );
 }
 
 const theme = createTheme();
 
+//---------------------------------------
 export const SignUp = () => {
 
   const [stAlert, setStAlert] = useState({showMe: false});
+  const [stAlertText, setStAlertText] = useState('');
   const history = useHistory();
 
+  //Normalito SignUp
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({ email: data.get('email') , password: data.get('password') , username: data.get('username') });
     
-    if(data.get('email').trim() === '' || data.get('password').trim() === '' || validateEmail(data.get('email')) === false || data.get('username').trim() === ''){
+    if(data.get('email').trim() === '' || data.get('password').trim() === '' || data.get('username').trim() === ''){
       setStAlert({showMe: true});
+      setStAlertText('x x Todos los campos son obligatorios x x');
+      return;
+    }
+
+    if(!validateEmail(data.get('email'))){
+      setStAlert({showMe: true});
+      setStAlertText('x x El email no es valido x x');
       return;
     }
     
+    if(data.get('password').length < 7){
+      setStAlert({showMe: true});
+      setStAlertText('x x Contraseña de al menos 7 caracteres x x');
+      return;
+    }
+        
     if(data.get('password') !== data.get('password2')){
       setStAlert({showMe: true});
+      setStAlertText('x x Las contraseñas no coinciden x x');
       return;
     }
 
@@ -59,24 +78,36 @@ export const SignUp = () => {
       setStAlert({showMe: true});
       return;
     }
-    
   };
+
+  //Google SignUp
+  const hdlGoogleUp = async () => {
+    const newUser = await googleCreate();
+    if(newUser){
+      console.log('Usuario creado');
+      history.push('/login');
+    }else{
+      setStAlert({showMe: true});
+      return;
+    }
+  };
+
   
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
+          <Avatar sx={{ m: 1, bgcolor: '#10be3c' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign up
+            Mucho gusto!. Regístrate.
           </Typography>
           {/* Posible componente Alert - Sacar*/}
           <Box sx={{ width: '100%' }}>
               <Collapse in={stAlert.showMe}>
-                  <Alert severity="warning"> x x x Algo está mal, revisa. x x x</Alert>
+                  <Alert severity="warning">{stAlertText}</Alert>
               </Collapse>
           </Box>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
@@ -84,22 +115,34 @@ export const SignUp = () => {
             <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth id="email" label="Email Address to register" name="email" autoComplete="email"/>
             <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password" label="Enter a password" type="password" id="password" autoComplete="current-password"/>
             <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password2" label="Re-enter Password" type="password" id="password2" autoComplete="current-password"/>
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Registrarme {'>>'}
-              </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link component={RouterLink} to="/login" variant="body2">
-                  {'< volver a login'}
-                </Link>
-              </Grid>
-              <Grid item>
-                
-              </Grid>
-            </Grid>
+            <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 1, bgcolor: '#10be3c'   }}>
+              Registrar
+            </Button>
           </Box>
+          <div className="container">
+            <div className="row">
+              <div className="col text-center">
+                <button onClick={hdlGoogleUp} type='button' className="btn btn-danger btn-sm btn-block mt-2">
+                  o Regístrate con <GoogleIcon />oogle
+                </button>
+              </div>
+            </div>
+          </div>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
+          <Typography component="h6" variant="h8">
+              <hr />
+          </Typography>
+          <Grid container>
+            <Grid item xs>
+              <Link component={RouterLink} to="/login" variant="body2" sx={{color: '#0f7e2b'}}>
+                {'<< volver a login'}
+              </Link>
+            </Grid>
+            <Grid item>
+              {/*Intentionally left blank*/}
+            </Grid>
+          </Grid>
+        <Copyright sx={{ mt: 3, mb: 4 }} />
       </Container>
     </ThemeProvider>
   );

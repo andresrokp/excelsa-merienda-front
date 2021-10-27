@@ -21,14 +21,14 @@ import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 
 //MisImportaciones
-import { green, orange } from '@mui/material/colors';
+import { orange } from '@mui/material/colors';
 import { MainContentProductos } from '../Productos/MainContentProductos';
 import { MainContentVentas } from '../Ventas/MainContentVentas';
 import { globalUser } from '../../Functionalities/Firebase/Controllers/Producto/Productos';
 import { MainContentRoles } from '../Roles/MainContentRoles'
 import { UserContext } from '../Context/UserContext';
 import { Paper } from '@mui/material';
-
+import './dshb.css';
 
 function Copyright(props) {
   return (
@@ -92,10 +92,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme({
   palette: {
     primary: {
-      main: orange[500],
+      main: '#0f7e2b',
     },
     secondary: {
-      main: green[500],
+      main: orange[500],
     },
   },
 });
@@ -138,21 +138,18 @@ export const DashboardWHTP = () => {
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              component="h1"
-              variant="h4"
-              color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
-              Excelsa Merienda
-            </Typography>
-            by andresrokp
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            <div className="row col-9 col-sm-11 justify-content-around">
+              <div className="col-6">
+                <img width='150px' src={'https://firebasestorage.googleapis.com/v0/b/db-bocadopoder.appspot.com/o/logo-excelsa-edit.PNG?alt=media&token=16cccc6a-b1cb-4b5d-83ed-08f5175f4ae1'} alt="logo"/>
+              </div>
+              <div className="col-1">
+                <IconButton color="inherit">
+                  <Badge badgeContent={4} color="secondary">
+                    <NotificationsIcon />
+                  </Badge>
+                </IconButton>
+              </div>
+            </div>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
