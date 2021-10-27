@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 // import { MenuPanel } from './MenuScheme/MenuPanel';
 import { ListaRoles } from './ListaRoles';
-// import CuadritoDerecha from './CuadritoDerecha';
+import CuadritoDerecha from './CuadritoDerecha';
 import { consultarDatabase } from '../../Functionalities/Firebase/Controllers/Producto/Productos';
 
 
@@ -44,14 +44,14 @@ export function MainContentRoles(){
         <Paper sx={{p: 2, display: 'flex', flexDirection: 'column'}}>
           <MenuPanel hdlAddListDB={hdlAddListDBd} setSearchKey={setSearchKey}/>
         </Paper>
-      </Grid>
-      <Grid item xs={12} md={3}>
+  </Grid>*/}
+      <Grid item xs={12} md={12}>
         <Paper
           sx={{p: 2, display: 'flex', flexDirection: 'column'}}
         >
           <CuadritoDerecha />
         </Paper>
-      </Grid> */}
+      </Grid>
       <Grid item xs={12}>
         <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
           <ListaRoles hdlRefresh={hdlRefresh} totalList={appListDB} />

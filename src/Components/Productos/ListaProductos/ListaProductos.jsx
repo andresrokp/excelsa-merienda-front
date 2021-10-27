@@ -6,9 +6,15 @@ basado en: material-ui dashboard
 */
 
 import React, { Fragment } from 'react'
+import { eliminarDocumentoDatabase } from '../../../Functionalities/Firebase/Controllers/Producto/Productos';
 import { BotonModal } from '../MenuProductos/BotonModal';
 
 export const ListaProductos = ( props ) => {
+
+    const hdlDeleteProducto = async ( dbid ) => {
+        await eliminarDocumentoDatabase('productos', dbid );
+        props.hdlAddListDB();
+    }
     
     return (
         <Fragment>
@@ -26,7 +32,7 @@ export const ListaProductos = ( props ) => {
                                         <th>Descripción</th>
                                         <th>Valor Unitario</th>
                                         <th>Disponible</th>
-                                        <th> . </th>
+                                        <th>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -36,7 +42,11 @@ export const ListaProductos = ( props ) => {
                                             <td>{elem.descripcion}</td>
                                             <td>{elem.valor}</td>
                                             <td>{elem.estado ? "SI" : "NO"}</td>
-                                            <td> <BotonModal btnName={'Editar'} btnNumber={2} curElem={elem} propsLP={props}/></td>
+                                            <td>
+                                                <BotonModal btnName={'Editar'} btnNumber={2} curElem={elem} propsLP={props}/>
+                                                <button onClick={()=>(hdlDeleteProducto(elem.dbid))} className="btn btn-danger" type="button">
+                                                    Quitar</button>
+                                            </td>
                                         </tr>
                                     ))}
                                     <tr>

@@ -15,7 +15,7 @@ export const ListaRoles = ( props ) => {
         console.log(elem)
         if (elem.role === 'espera') newRole = 'vendedor';
         if (elem.role === 'vendedor') newRole = 'admin';
-        if (elem.role === 'admin') newRole = 'vendedor';
+        if (elem.role === 'admin') newRole = 'espera';
         await actualizarDocumentoDatabase('userList', elem.dbid, {email: elem.email, role: newRole, uid: elem.uid, name: elem.name})
         props.hdlRefresh()
 
@@ -27,7 +27,8 @@ export const ListaRoles = ( props ) => {
             <div className="col-lg-12">
                 <div className="card mb-0">
                     <div className="card-header">
-                        <h3 className="h4 mb-0 text-center">Listado total de productos</h3>
+                        <h3 className="h4 mb-0 text-center">Listado total Usuarios</h3>
+                        <p className="text-center">NOTA: Presione el boton para cambiar el estado y el rol de un usuario</p>
                     </div>
                     <div className="card-body">
                         <div className="table-responsive">
@@ -36,8 +37,9 @@ export const ListaRoles = ( props ) => {
                                     <tr>
                                         <th>Nombre</th>
                                         <th>email</th>
+                                        <th>Estado</th>
                                         <th>Rol</th>
-                                        <th>switch</th>
+                                        <th>Acción</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -45,16 +47,18 @@ export const ListaRoles = ( props ) => {
                                         <tr key={elem.dbid}>
                                             <th scope="row">{elem.name}</th>
                                             <td>{elem.email}</td>
+                                            <td>{elem.role === 'espera' ? 'Pendiente' : 'Autorizado'}</td>
                                             <td>{elem.role}</td>
                                             <td> 
                                                 <button className="btn btn-primary" onClick={()=>hdlSwitch(elem)}>
-
+                                                    Switch
                                                 </button>
                                             </td>
                                         </tr>
                                     ))}
                                     <tr>
                                         <th className="border-bottom-0" scope="row"></th>
+                                        <td className="border-bottom-0"></td>
                                         <td className="border-bottom-0"></td>
                                         <td className="border-bottom-0"></td>
                                         <td className="border-bottom-0"></td>

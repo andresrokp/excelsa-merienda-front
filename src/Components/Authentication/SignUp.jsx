@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -26,7 +26,7 @@ function validateEmail(email) {
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '} Excelsa Merienda por @andresrokp {new Date().getFullYear()}{'.'}
+      {'Copyleft ☺ '} Excelsa Merienda por @andresrokp {new Date().getFullYear()}{'.'}
     </Typography>
   );
 }
@@ -99,7 +99,7 @@ export const SignUp = () => {
         <CssBaseline />
         <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
           <Avatar sx={{ m: 1, bgcolor: '#10be3c' }}>
-            <LockOutlinedIcon />
+            <HowToRegIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Mucho gusto!. Regístrate.
@@ -111,10 +111,10 @@ export const SignUp = () => {
               </Collapse>
           </Box>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="username" label="Nombre personal" type="text" id="username" autoComplete="username"/>
-            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth id="email" label="Email Address to register" name="email" autoComplete="email"/>
-            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password" label="Enter a password" type="password" id="password" autoComplete="current-password"/>
-            <TextField onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password2" label="Re-enter Password" type="password" id="password2" autoComplete="current-password"/>
+            <TextField size='small' onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="username" label="Nombre personal" type="text" id="username" autoComplete="username"/>
+            <TextField size='small'  onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth id="email" label="Email Address to register" name="email" autoComplete="email"/>
+            <TextField size='small'  onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password" label="Enter a password" type="password" id="password" autoComplete="current-password"/>
+            <TextField size='small'  onFocus={(e)=>{setStAlert(false)}} margin="normal" required fullWidth name="password2" label="Re-enter Password" type="password" id="password2" autoComplete="current-password"/>
             <Button type="submit" fullWidth variant="contained" sx={{ mt: 1, mb: 1, bgcolor: '#10be3c'   }}>
               Registrar
             </Button>

@@ -6,16 +6,17 @@ basado en: material-ui dashboard
 */
 
 import React, { Fragment } from 'react'
-import { BotonModal } from './MenuScheme/BotonModal';
 
-export const ListaVentas = ( props ) => {
+export const ListaRest = ( {...props} ) => {
+
+    console.log('Props de listaRest ~~',props);
     
     return (
         <Fragment>
             <div className="col-lg-12">
                 <div className="card mb-0">
                     <div className="card-header">
-                        <h3 className="h4 mb-0 text-center">Listado total de Ventas</h3>
+                        <h3 className="h6 mb-0 text-center">ATENCIÖN: con las cantidades. Al agregar, se <strong>agrega de uno en uno</strong>. Al Quitar, se <strong>eliminan todas las repeticiones</strong> a la vez.</h3>
                     </div>
                     <div className="card-body">
                         <div className="table-responsive">
@@ -23,24 +24,24 @@ export const ListaVentas = ( props ) => {
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Fecha</th>
-                                        <th>Encargado</th>
-                                        <th>Cliente</th>
-                                        <th>Valor</th>
-                                        <th>Estado</th>
+                                        <th>Descripción</th>
+                                        <th>Valor Unitario</th>
+                                        <th>Disponible</th>
                                         <th> . </th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {props.totalList.map((elem)=>(
-                                        <tr key={elem.id}>
+                                    {props.totalList.map((elem,index)=>(
+                                        <tr key={elem.dbid+index}>
                                             <th scope="row">{elem.id}</th>
-                                            <td>{elem.fecha}</td>
-                                            <td>{elem.encargado}</td>
-                                            <td>{elem.nomCliente}</td>
+                                            <td>{elem.descripcion}</td>
                                             <td>{elem.valor}</td>
-                                            <td>{elem.estado}</td>
-                                            <td> <BotonModal btnName={'Editar'} btnNumber={2} curElem={elem} propsLP={props}/></td>
+                                            <td>{elem.estado ? "SI" : "NO"}</td>
+                                            <td> <button className="btn btn-primary" onClick={()=>(props.hdlAddOne(elem.dbid))}>
+                                                +Add</button>
+                                                {props.isCarrito ? <button className="btn btn-danger" onClick={()=>(props.hdlDeleteOne(elem.dbid))}>
+                                                -Del</button> : null}
+                                                </td>
                                         </tr>
                                     ))}
                                     <tr>

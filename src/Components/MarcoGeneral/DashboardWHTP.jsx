@@ -33,9 +33,9 @@ import './dshb.css';
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+      {'Copyleft ☺ '}
+      <Link color="inherit" href="https://github.com/andresrokp/">
+        @andresrokp
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -229,7 +229,7 @@ const CuadritoHome = () => {
             Tienes Rol de: {user.role}
           </Typography>
           
-          <Link color="primary" href="#">
+          <Link color="primary" href="">
             MisiónTIC 2022
           </Link>
 

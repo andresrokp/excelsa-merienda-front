@@ -4,22 +4,28 @@ github: @andresrokp
 basado en: material-ui dashboard
 */
 
-import {React , Fragment, useState, useEffect} from 'react'
+import {React , Fragment, useState, useEffect, useContext} from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { customAlphabet } from 'nanoid'
 
-import { actualizarDocumentoDatabase, consultarDatabaseWhere, guardarDatabase } from '../../Functionalities/Firebase/Controllers/Producto/Productos'
+import { actualizarDocumentoDatabase, consultarDatabase, consultarDocumentoDatabase, guardarDatabase } from '../../Functionalities/Firebase/Controllers/Producto/Productos'
 import AlertAndres from './MenuScheme/AlertAndres'
 
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
+import { UserContext } from '../Context/UserContext'
+
+import { BotonRest } from './PruebaRest/BotonRest'
 
 
 export function FormaDinamicaVentas( props ) {
 
-    console.log(props);
+    const { user } = useContext(UserContext);
+    const theUser = user;
+
+    // console.log(props);
     const { isCreate } = props;
     const nanoidCA = customAlphabet('0123456789JHKQ', 8)
     const hdlDate = ()=>{
@@ -29,14 +35,14 @@ export function FormaDinamicaVentas( props ) {
         const year = date.getFullYear();
         const hour = date.getHours();
         const minutes = date.getMinutes();
-        return `${day}/${month}/${year} @ ${hour}:${minutes}`;
+        return `${day}/${month}/${year} . ${hour}:${minutes}`;
     }
     let hdlAddListDBx;
     let initState = {}
     let myDbid = '';
     
     if (isCreate) {                            // OJO: encargado realmente viene del Auth user
-        initState = {id: nanoidCA(), fecha:hdlDate(), encargado:'', nomCliente:'', docCliente:'', listaCompra:[], valor:0, estado:0};
+        initState = {id: nanoidCA(), fecha:hdlDate(), encargado: theUser.name, nomCliente:'', docCliente:'', listaCompra:[], valor:0, estado:'En proceso'};
         hdlAddListDBx = () => {props.propsMM.propsBM.propsMP.hdlAddListDB();};
     }else{
         initState = {   id: props.propsMM.propsBM.curElem.id,
@@ -47,7 +53,6 @@ export function FormaDinamicaVentas( props ) {
                         listaCompra: props.propsMM.propsBM.curElem.listaCompra,
                         valor: props.propsMM.propsBM.curElem.valor,
                         estado: props.propsMM.propsBM.curElem.estado
-
                     };
         myDbid = props.propsMM.propsBM.curElem.dbid;
         hdlAddListDBx = () => {props.propsMM.propsBM.propsLP.hdlAddListDB();};
@@ -55,12 +60,10 @@ export function FormaDinamicaVentas( props ) {
     
     const [stRegistro, setStRegistro] = useState(initState);
     const [stEnvio, setStEnvio] = useState({isGood:false, dbid:'', show:false});
-    const [stProdToAdd, setStProdToAdd] = useState('');
-    const [stProdToDel, setStProdToDel] = useState('');
+    // const [stViewModalAdd, setStViewModalAdd] = useState(false);
+    // const [stViewModalCarrito, setStViewModalCarrito] = useState(false);
+    const [listaProductos, setListaProductos] = useState([]);
 
-    //OJO: quitar, realmente viene del Auth user
-    const hdlEncargado = (e)=>{ setStRegistro((prevState)=>({...prevState, encargado:e.target.value})) }
-    
     const hdlNomCliente = (e)=>{ setStRegistro((prevState)=>({...prevState, nomCliente:e.target.value})) }
     
     const hdlDocCliente = (e)=>{ setStRegistro((prevState)=>({...prevState, docCliente:e.target.value})) }
@@ -71,23 +74,17 @@ export function FormaDinamicaVentas( props ) {
 
     const hdlListaCompra = (newList)=>{ setStRegistro((prevState)=>({...prevState, listaCompra:newList})) }
     
-    const hdlStAddP = (e)=>{ setStProdToAdd((prevState)=>(e.target.value) )}
-
-    const hdlStDelP = (e)=>{ setStProdToDel((prevState)=>(e.target.value) )}
-
-    const hdlAddOne = async ()=>{
-        if(stProdToAdd.length === 6){
-            const prod = await consultarDatabaseWhere('productos', 'id', stProdToAdd);
-            console.log('prod cuando entra ~~',prod);
-            if (prod !== false) hdlListaCompra([...stRegistro.listaCompra, ...prod]);
-            setStProdToAdd('');
-        }
+    const hdlAddOne = async (dbid)=>{
+        const prod = await consultarDocumentoDatabase('productos', dbid);
+        if (prod) hdlListaCompra([...stRegistro.listaCompra, prod]);
+        console.log('ListaCompra luego de Add ~~' , stRegistro.listaCompra);
     }
+            
     
     //function to delete a product from the list with a field
-    const hdlDelOne = (anId)=>{
+    const hdlDeleteOne = (anId)=>{
         const newList = stRegistro.listaCompra.filter((prod)=>{
-            return prod.id !== stProdToDel;
+            return prod.dbid !== anId;
         });
         hdlListaCompra(newList)
     };
@@ -105,16 +102,13 @@ export function FormaDinamicaVentas( props ) {
     }
 
     const hdlForm = async (e)=>{
-
         e.preventDefault();
-        if(!stRegistro.id || !stRegistro.descripcion.trim() || !stRegistro.valor.trim() || stRegistro.estado === null){
+        if(!stRegistro.id || !stRegistro.nomCliente.trim() || !stRegistro.docCliente.trim()){
             setStEnvio({isGood:false, dbid:'', show:true});
             return;
         }
-
         if(isCreate) await hdlCreation();
         else await hdlUpdating();
-        
         hdlAddListDBx();
     }
 
@@ -129,9 +123,20 @@ export function FormaDinamicaVentas( props ) {
         hdlVal(value);
     },[stRegistro.listaCompra])
 
+
     useEffect(()=>{
         setStEnvio((prior)=>({...prior, show:false}));
-    },[stRegistro.descripcion, stRegistro.valor, stRegistro.estado])
+    },[stRegistro.nomCliente, stRegistro.valor, stRegistro.estado, stRegistro.docCliente])
+
+    useEffect(()=>{
+        async function loadProds(){
+            const prods = await consultarDatabase('productos');
+            setListaProductos(prods)
+        }
+        loadProds();
+    },[])
+
+    
 
 
 
@@ -141,69 +146,63 @@ export function FormaDinamicaVentas( props ) {
             <AlertAndres from={"Registro"} showMe={stEnvio.show} isGood={stEnvio.isGood} props={{DBid : stEnvio.dbid}}/>
             <form id="forma-registro-prod" onSubmit={hdlForm}>
                 <div className="row justify-content-center">
-                    <div className="mb-3 col-12 col-md-5">
+                    <div className="mb-3 col-5 col-md-6">
                         <label className="form-label" htmlFor="inputProductID">
-                            ID local asignada </label>
+                            ID local </label>
                         <input value={stRegistro.id} disabled className="form-control"/>
                         {isCreate ? null:<label>---id en la DDBB : {myDbid}</label>}
                     </div>
-                    <div className="mb-3 col-12 col-md-5">
+                    <div className="mb-3 col-5 col-md-6">
                         <label className="form-label" htmlFor="inputProductID">
-                            Fecha de la compra </label>
+                            Fecha compra </label>
                         <input value={stRegistro.fecha} disabled className="form-control"/>
                     </div>
                 </div>
                 <div className="row justify-content-center">
-                    <div className="mb-3 col-12 col-sm-5">
+                    <div className="mb-3 col-6 col-sm-6">
                         <label className="form-label" htmlFor="modalInputProductName">
                             Nombre Cliente </label>
-                        <input value={stRegistro.nomCliente} onChange={hdlNomCliente} placeholder="" className="form-control" type="text" name="q"/>
+                        <input value={stRegistro.nomCliente} onChange={hdlNomCliente} placeholder="..Ingrese Nombre" className="form-control" type="text" name="q"/>
                     </div>
-                    <div className="mb-3 col-12 col-sm-5">
+                    <div className="mb-3 col-6 col-sm-6">
                         <label className="form-label" htmlFor="modalInputProductName">
                             Cédula Cliente </label>
-                        <input value={stRegistro.docCliente} onChange={hdlDocCliente} placeholder="" className="form-control" type="text" name="q"/>
+                        <input value={stRegistro.docCliente} onChange={hdlDocCliente} placeholder="..Ingrese cédula" className="form-control" type="text" name="q"/>
                     </div>
                 </div>
-                <div className="mb-3">
-                    <label className="form-label" htmlFor="modalInputProductName">
-                        Vendedor encargado </label>
-                    <input value={stRegistro.encargado} onChange={hdlEncargado} placeholder="" className="form-control" type="text" name="q"/>
-                </div>
-                <div className="row justify-content-center">
-                    <div className="mb-3 col-12 col-sm-6">
-                        <button type="button" className="btn btn-primary" onClick={hdlAddOne}>
-                            + </button>
-                        <label className="form-label" htmlFor="modalInputProductName">
-                            Agregar producto </label>
-                        <input value={stProdToAdd} onChange={hdlStAddP} placeholder="Ingrese ID" className="form-control" type="text" name="q"/>
+                <div className="row justify-content-around">
+                    <div className="mb-1 col-5 col-sm-4">
+                        <BotonRest btnNumber={3} btnName={"Agregar"} totalList={listaProductos} hdlAddOne={hdlAddOne}/>
                     </div>
-                    <div className="mb-3 col-11 col-sm-6">
-                        <div className="text-end form-label" htmlFor="modalInputProductName">
-                            Quitar producto </div>
-                        <input value={stProdToDel} onChange={hdlStDelP} placeholder="Ingerese ID" className="form-control" type="text" name="q"/>
-                        <button type="button" className="btn btn-primary" onClick={hdlDelOne}>
-                            - </button>
+                    <div className="mb-1 col-5 col-sm-4">
+                        <BotonRest isCarrito={true} btnNumber={4} btnName={"Ver Carrito"} totalList={stRegistro.listaCompra} hdlAddOne={hdlAddOne} hdlDeleteOne={hdlDeleteOne}/>
                     </div>
-                </div>
-                <div className="mb-3">
-                    <label className="form-label" htmlFor="modalInputProductPrice">
-                        Valor Total </label>
-                    <input value={stRegistro.valor} disabled className="form-control" id="modalInputProductPrice" type="text"/>
+                    <div className="mb-3 col-12 col-sm-4">
+                        <label className="form-label" htmlFor="modalInputProductPrice">
+                            Valor Total </label>
+                        <input value={stRegistro.valor} disabled className="form-control" id="modalInputProductPrice" type="text"/>
+                    </div>
                 </div>
                 <FormControl component="fieldset">
                     <strong>Estado:</strong>
                     <RadioGroup row aria-label="gender" name="row-radio-buttons-group">
-                        <FormControlLabel onClick={()=>(hdlEstado(true))} value="proceso" control={<Radio checked={stRegistro.estado === 0? true:false} />} label="En proceso" />
+                        <FormControlLabel onClick={()=>(hdlEstado('En proceso'))} value="proceso" control={<Radio checked={stRegistro.estado === 'En proceso'? true:false} />} label="En proceso" />
                         <span>&nbsp;</span>
-                        <FormControlLabel onClick={()=>(hdlEstado(false))} value="cancelada" control={<Radio checked={stRegistro.estado === -1? true:false}/>} label="Cancelada" />
+                        <FormControlLabel onClick={()=>(hdlEstado('Cancelada'))} value="cancelada" control={<Radio checked={stRegistro.estado === 'Cancelada'? true:false}/>} label="Cancelada" />
                         <span>&nbsp;</span>
-                        <FormControlLabel onClick={''} value="entregada" control={<Radio checked={stRegistro.estado === 1? true:false}/>} label="Entregada" />
+                        <FormControlLabel onClick={()=>(hdlEstado('Entregada'))} value="entregada" control={<Radio checked={stRegistro.estado === 'Entregada'? true:false}/>} label="Entregada" />
                     </RadioGroup>
                 </FormControl>
-                <div className="text-center">
-                    <button className="btn btn-primary" type="submit">
-                        Registrar </button>
+                <label className="form-label" htmlFor="modalInputProductName">
+                    Venta hecha por: </label>
+                <div className="row justify-content-center">
+                    <div className="mb-3 col-6 col-sm-6">
+                        <input value={stRegistro.encargado} disabled placeholder="" className="form-control" type="text" name="q"/>
+                    </div>
+                    <div className="mb-3 col-6 col-sm-6">
+                        <button className="btn btn-primary float-end" type="submit">
+                            Registrar </button>
+                    </div>
                 </div>
             </form>
         </Fragment>

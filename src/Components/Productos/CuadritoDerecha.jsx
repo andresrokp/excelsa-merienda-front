@@ -5,16 +5,11 @@ basado en: material-ui dashboard
 */
 
 import * as React from 'react';
-import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 
 import { UserContext } from '../Context/UserContext';
 
 
-
-function preventDefault(event) {
-  event.preventDefault();
-}
 
 export default function CuadritoDerecha() {
 
@@ -29,12 +24,8 @@ export default function CuadritoDerecha() {
         {user.name}
       </Typography>
       <Typography color="text.secondary" sx={{ flex: 1 }}>
-        WeHaveThePower
+        Excelsa Merienda
       </Typography>
-      
-      <Link color="primary" href="#" onClick={preventDefault}>
-        MisiónTIC 2022
-      </Link>
     </React.Fragment>
   );
 }
