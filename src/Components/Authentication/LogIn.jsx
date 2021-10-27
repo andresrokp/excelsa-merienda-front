@@ -10,18 +10,21 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
- 
-import { Link as RouterLink, useHistory } from 'react-router-dom';
 
-import { loginUsuario, logOutUsuario } from '../../Functionalities/Firebase/Controllers/Producto/Productos'
+import GoogleIcon from '@mui/icons-material/Google';
+
+import { Link as RouterLink, useHistory } from 'react-router-dom';
+import { googleLogin, loginUsuario, logOutUsuario } from '../../Functionalities/Firebase/Controllers/Producto/Productos'
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import { UserContext } from '../Context/UserContext';
+import './login.css';
+import { Spinner } from './Spinner';
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '} Excelsa Merienda {new Date().getFullYear()}{'.'}
+      {'Copyright © '} Excelsa Merienda por Andrés FRP, {new Date().getFullYear()}{'.'}
     </Typography>
   );
 }
@@ -33,6 +36,8 @@ export const LogIn = () => {
   const { setUser } = useContext(UserContext)
 
   const [stAlert, setStAlert] = useState({showMe: false});
+  const [stAlertText, setStAlertText] = useState('');
+  const [stLoading, setStLoading] = useState(false);
 
   const history = useHistory();
 
@@ -43,22 +48,36 @@ export const LogIn = () => {
     
     if(data.get('email').trim() === '' || data.get('password').trim() === '') {
       setStAlert({showMe: true});
+      setStAlertText('x x Ingrese un email y una contraseña  x x');
       return;
     }
-
+    
+    setStLoading(true);
     const user = await loginUsuario(data.get('email'), data.get('password'));
-
     if(user){
-      console.log('login bueno, devolvió user ~~', user);
       setUser(user);
       localStorage.setItem('elsujetoencuestion', JSON.stringify(user));
       localStorage.setItem('boardCounter', '1');
       history.push(`/${user.uid}/home`);
     }else{
-      console.log('login malo');
       setStAlert({showMe: true});
+      setStAlertText('x x  Email o contraseña incorrectos  x x');
+      setStLoading(false);
     }
-
+  };
+  
+  const hdlGoogleIn = async () => {
+    
+    const user = await googleLogin();
+    if(user){
+      setUser(user);
+      localStorage.setItem('elsujetoencuestion', JSON.stringify(user));
+      localStorage.setItem('boardCounter', '1');
+      history.push(`/${user.uid}/home`);
+    }else{
+      setStAlert({showMe: true});
+      setStAlertText('Credenciales de Google no registradas');
+    }
   };
   
   
@@ -66,51 +85,56 @@ export const LogIn = () => {
     logOutUsuario();
   }, []);
 
-  return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Log in
-          </Typography>
-          {/* Posible componente Alert - Sacar*/}
-          <Box sx={{ width: '100%' }}>
-              <Collapse in={stAlert.showMe}>
-                  <Alert severity="warning"> x x x Algo está mal, revisa. x x x</Alert>
-              </Collapse>
+return (
+      <ThemeProvider theme={theme}>
+        <Container component="main" maxWidth="xs">
+          <CssBaseline />
+          <Box sx={{ marginTop: 1, display: 'flex', flexDirection: 'column', alignItems: 'center',}}>
+            <Avatar sx={{ m: 1, bgcolor: '#10be3c' }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Bienvenid@!. Ingresa a tu cuenta.
+            </Typography>
+            {/* Invisible Alert*/}
+            <Box sx={{ width: '100%' }}>
+                <Collapse in={stAlert.showMe}>
+                    <Alert severity="warning">{stAlertText}</Alert>
+                </Collapse>
+            </Box>
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+              <TextField onFocus={(e)=>{setStAlert(false)}} label="Escribe tu correo" margin="normal" required fullWidth id="email" name="email"/>
+              <TextField onFocus={(e)=>{setStAlert(false)}} label="Escribe tu contraseña" margin="normal" required fullWidth name="password" type="password" id="password"/>
+              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2, bgcolor: '#10be3c'  }}>
+                {stLoading ? <Spinner/> : 'Ingresar'}
+                </Button>
+            </Box>
+            <div className="container">
+              <div className="row">
+                <div className="col text-center">
+                  <button onClick={hdlGoogleIn} type='button' className="btn btn-danger btn-sm btn-block mt-2">
+                    o Ingresa con <GoogleIcon />oogle
+                  </button>
+                </div>
+              </div>
+            </div>
           </Box>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField onFocus={(e)=>{setStAlert(false)}} label="Escribe tu correo" margin="normal" required fullWidth id="email" name="email"/>
-            <TextField onFocus={(e)=>{setStAlert(false)}} label="Escribe tu contraseña" margin="normal" required fullWidth name="password" type="password" id="password"/>
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-              Ingresar
-              </Button>
-            <Grid container>
-              <Grid item xs>
-                
-              </Grid>
-              <Grid item>
-                <Link component={RouterLink} to="/signup" variant="body2">
-                  {"¿No tienes cuenta?, Regístrate."}
-                </Link>
-              </Grid>
-            </Grid>
-          </Box>
-          {/* <Typography component="h6" variant="h8">
+          <Typography component="h6" variant="h8">
             <hr />
-            O ingresa con tu cuenta de Google:
           </Typography>
-            <button className="btn btn-danger btn-block mt-2" type="button">
-            Ingresar con Google
-          </button> */}
-          
-        </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
-      </Container>
-    </ThemeProvider>
+          <Grid container>
+            <Grid item xs>
+              {/*intentionally blank*/}
+            </Grid>
+            <Grid item>
+              <Link component={RouterLink} to="/signup" variant="body2" sx={{color: '#0f7e2b'}}>
+                ¿No tienes cuenta?, Regístrate.
+              </Link>
+            </Grid>
+          </Grid>
+          <Copyright sx={{ mt: 3, mb: 4 }} />
+        </Container>
+      </ThemeProvider>
+      
   );
 }

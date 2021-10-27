@@ -7,13 +7,22 @@ import { LogIn } from '../Components/Authentication/LogIn';
 import { SignUp } from '../Components/Authentication/SignUp';
 import { DashboardWHTP } from '../Components/MarcoGeneral/DashboardWHTP';
 import { NotFound } from '../Components/MarcoGeneral/NotFound';
+import { LayoutAuth } from '../Components/Authentication/LayoutAuth';
 
 export const MainRouter = () => {
     return (
         <Router>
             <Switch>
-                <Route path="/login" component={LogIn}/>
-                <Route path="/signup" component={SignUp}/>
+                <Route path="/login">
+                    <LayoutAuth>
+                        <LogIn/>
+                    </LayoutAuth>
+                </Route>
+                <Route path="/signup">
+                    <LayoutAuth>
+                        <SignUp/>
+                    </LayoutAuth>
+                </Route>
                 <PrivateRoute exact path={'/'} component={DashboardWHTP}/>
                 <PublicRoute path={'/:id/*'} component={DashboardWHTP}/>
                 <PublicRoute path={'/*'} component={NotFound}/>
